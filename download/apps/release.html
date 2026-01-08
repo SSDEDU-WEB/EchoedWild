@@ -102,6 +102,9 @@
             text-decoration: none;
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+            cursor: pointer;
+            border: none;
+            outline: none;
         }
         
         .download-btn:hover {
@@ -127,6 +130,41 @@
             font-size: 0.9rem;
         }
         
+        .linkvertise-note {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            text-align: left;
+            border-radius: 5px;
+        }
+        
+        .linkvertise-note h3 {
+            color: #ff9800;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .linkvertise-note p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
         @media (max-width: 600px) {
             .download-container {
                 padding: 2rem 1.5rem;
@@ -142,7 +180,7 @@
         </div>
         
         <h1>Download EchoedWild</h1>
-        <p>Your download will begin automatically in a few seconds. If it doesn't, click the download button below.</p>
+        <p>Click the download button below to get redirected to Linkvertise. Complete the quick step to access your download.</p>
         
         <div class="download-info">
             <div class="info-row">
@@ -158,18 +196,23 @@
                 <span class="info-value">1.0.0 (Release)</span>
             </div>
             <div class="info-row">
-                <span class="info-label">Compatibility:</span>
-                <span class="info-value">Android 8.0 and above</span>
+                <span class="info-label">Download Via:</span>
+                <span class="info-value">Linkvertise</span>
             </div>
         </div>
         
-        <!-- This link will trigger the APK download -->
-        <a href="../app-release.apk" class="download-btn" id="download-link" download="EchoedWild-v1.0.0.apk">
-            <i class="fas fa-download"></i>
-            Download APK Now
-        </a>
+        <div class="linkvertise-note">
+            <h3><i class="fas fa-info-circle"></i> Important Note</h3>
+            <p>You will be redirected to Linkvertise to complete a quick step before downloading. This helps support the development of EchoedWild.</p>
+        </div>
         
-        <div class="countdown" id="countdown">Starting download in <span id="countdown-number">5</span> seconds...</div>
+        <!-- This button will redirect to Linkvertise -->
+        <button class="download-btn" id="download-btn">
+            <span id="btn-text">Proceed to Linkvertise</span>
+            <span id="btn-icon"><i class="fas fa-external-link-alt"></i></span>
+        </button>
+        
+        <div class="countdown" id="countdown">Redirecting in <span id="countdown-number">10</span> seconds...</div>
         
         <a href="../index.html" class="back-link">
             <i class="fas fa-arrow-left"></i> Back to Home Page
@@ -177,29 +220,62 @@
     </div>
 
     <script>
-        // Countdown timer for automatic download
-        let countdown = 5;
-        const countdownElement = document.getElementById('countdown-number');
-        const downloadLink = document.getElementById('download-link');
+        // Linkvertise URL
+        const LINKVERTISE_URL = "https://linkvertise.com/2623305/jP3teemHVWfF?o=sharing";
         
-        function updateCountdown() {
+        // Countdown timer for automatic redirect
+        let countdown = 10;
+        const countdownElement = document.getElementById('countdown-number');
+        const countdownContainer = document.getElementById('countdown');
+        const downloadBtn = document.getElementById('download-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnIcon = document.getElementById('btn-icon');
+        
+        // Manual redirect function
+        function redirectToLinkvertise() {
+            // Show loading state
+            btnText.textContent = 'Redirecting...';
+            btnIcon.innerHTML = '<div class="loading-spinner"></div>';
+            downloadBtn.disabled = true;
+            
+            // Redirect after a brief moment
+            setTimeout(() => {
+                window.location.href = LINKVERTISE_URL;
+            }, 500);
+        }
+        
+        // Automatic redirect function
+        function autoRedirect() {
             countdownElement.textContent = countdown;
             
             if (countdown <= 0) {
-                // Trigger the download when countdown reaches 0
-                downloadLink.click();
+                // Redirect when countdown reaches 0
                 countdownElement.textContent = '0';
-                document.getElementById('countdown').textContent = 'Download started!';
+                countdownContainer.textContent = 'Redirecting now...';
+                redirectToLinkvertise();
                 return;
             }
             
             countdown--;
-            setTimeout(updateCountdown, 1000);
+            setTimeout(autoRedirect, 1000);
         }
+        
+        // Event listener for the download button
+        downloadBtn.addEventListener('click', redirectToLinkvertise);
         
         // Start countdown when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(updateCountdown, 1000);
+            // Start the countdown
+            setTimeout(autoRedirect, 1000);
+            
+            // Also add a click listener for the back link to prevent accidental clicks
+            document.querySelector('.back-link').addEventListener('click', function(e) {
+                if (confirm('You will lose your download progress. Are you sure you want to go back?')) {
+                    return true;
+                }
+                e.preventDefault();
+                return false;
+            });
         });
     </script>
 </body>
